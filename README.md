@@ -1,5 +1,9 @@
 # TPL-ThymioII
-tangible programming for Thymio II
+tangible programming language for Thymio II
+
+By Stefan Teller and Alexander Tuma,
+developed in the course of a lecture at the TU in summer semester 2017.
+
 
 Preperation:
 - Install MATLAB R2015b or higher
