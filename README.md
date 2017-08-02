@@ -20,6 +20,7 @@ How to use:
 - Run the script
 - Push a button to start the program
 
-
 In case of an error message in MATLAB, an environment variable on the Windows Computer has to be created:
 go to: environment variables -> systemvariables -> new: MATLAB_JAVA - C:\Program Files\Java\jre1.8.0_121 (or actual java installation)
+
+For further information, see the paper TPL-ThymioII_-_Teller-Tuma.
