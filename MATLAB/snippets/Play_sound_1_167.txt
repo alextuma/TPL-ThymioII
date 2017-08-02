@@ -1,0 +1,9 @@
+# Play sound #1
+if sound_fin == 1 then
+	sound_fin = 0
+	state = state + 1
+	sound_is_playing = 0
+elseif sound_is_playing == 0 then
+	call sound.system(1)
+	sound_is_playing = 1
+end

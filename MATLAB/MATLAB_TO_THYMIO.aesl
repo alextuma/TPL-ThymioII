@@ -1,0 +1,171 @@
+<!DOCTYPE aesl-source>
+<network>
+
+
+<!--list of global events-->
+
+
+<!--list of constants-->
+<constant value="3000" name="PROX_THRESHOLD"/>
+<constant value="500" name="MOTOR_SPEED"/>
+<constant value="1100" name="TIME_TO_TURN"/>
+<constant value="200" name="MOTOR_SPEED_TURN"/>
+
+
+<!--show keywords state-->
+<keywords flag="true"/>
+
+
+<!--node thymio-II-->
+<node nodeId="1" name="thymio-II">
+########################################################################################
+# create / initialize variables
+var state = 0			# current state of sequential program
+var state_button_backward = 0	
+var state_button_forward = 0
+var timer_fin = 0		# time elapsed
+var sound_fin = 0		# sound finished
+var sound_is_playing = 0
+var event = 1
+var loop_cnt[10]		# max of 10 loops		
+
+timer.period[0] = 0
+
+
+########################################################################################
+# events 
+onevent sound.finished
+	event = 1
+	sound_fin = 1
+onevent buttons
+	event = 1
+onevent timer0
+	event = 1
+	timer_fin = 1
+onevent prox
+	event = 1
+	
+	
+# button to stop thymio 
+if button.backward == 1 and state_button_backward == 0 then
+	state_button_backward = 1
+	motor.left.target=0 
+    motor.right.target=0	
+   	event = 0
+   	state = 0
+	call leds.top(0,0,0)
+	call sound.system(-1)
+   	timer.period[0] = 0
+   	timer_fin = 0	
+	sound_is_playing = 0
+	sound_fin = 0
+   	state_button_forward = 0	
+end	
+
+# start program
+if button.forward == 1 and state_button_forward == 0 then
+	state_button_forward = 1
+	state_button_backward = 0
+	state = 1
+	event = 1
+end	
+
+#state machine
+
+if  event==1 then
+	if state == 1 then
+		#set LED colour to yellow	
+		call leds.top(32,32,0)  
+		state = state+1
+	elseif state == 2 then
+		# Play sound #1
+		if sound_fin == 1 then
+			sound_fin = 0
+			state = state + 1
+			sound_is_playing = 0
+		elseif sound_is_playing == 0 then
+			call sound.system(1)
+			sound_is_playing = 1
+		end
+	elseif state == 3 then
+
+# start loop
+		loop_cnt[1] = 0
+		state = state + 1
+	elseif state == 4 then
+		#set LED colour to blue
+		call leds.top(0,0,32)  
+		state = state+1
+	elseif state == 5 then
+		#wait 1 sec
+		timer.period[0] = 500
+		if timer_fin == 1
+		then
+			timer_fin = 0	
+			state = state + 1
+			timer.period[0] = 0
+		end
+	elseif state == 6 then
+		#Turn off LEDs
+		call leds.top(0,0,0)  
+		state = state+1
+	elseif state == 7 then
+		#wait 1 sec
+		timer.period[0] = 500
+		if timer_fin == 1
+		then
+			timer_fin = 0	
+			state = state + 1
+			timer.period[0] = 0
+		end
+	elseif state == 8 then
+
+		loop_cnt[1] = loop_cnt[1]+1
+		if loop_cnt[1] >= 5 then
+			state = state+1
+		else 
+			state = 4
+		end
+	elseif state == 9 then
+		#drive forward until a obstacle appears
+		motor.left.target=MOTOR_SPEED 
+		motor.right.target=MOTOR_SPEED 
+		
+		if prox.horizontal[0] > PROX_THRESHOLD or
+		   prox.horizontal[1] > PROX_THRESHOLD or
+		   prox.horizontal[2] > PROX_THRESHOLD or
+		   prox.horizontal[3] > PROX_THRESHOLD or
+		   prox.horizontal[4] > PROX_THRESHOLD 
+		then
+		    motor.left.target=0 
+		    motor.right.target=0
+		    state = state +1 	
+		end
+	elseif state == 10 then
+		# turn left
+		timer.period[0] = TIME_TO_TURN
+		motor.left.target=-MOTOR_SPEED_TURN 
+		motor.right.target=MOTOR_SPEED_TURN
+		
+		if timer_fin == 1 then
+			timer_fin = 0
+			motor.left.target=0 
+			motor.right.target=0 	
+			state = state + 1
+			timer.period[0] = 0
+		end
+	end 
+	event = 0
+end
+
+
+
+
+
+
+
+</node>
+
+
+</network>
+

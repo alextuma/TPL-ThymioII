@@ -1,0 +1,14 @@
+#drive forward until a obstacle appears
+motor.left.target=MOTOR_SPEED 
+motor.right.target=MOTOR_SPEED 
+
+if prox.horizontal[0] > PROX_THRESHOLD or
+   prox.horizontal[1] > PROX_THRESHOLD or
+   prox.horizontal[2] > PROX_THRESHOLD or
+   prox.horizontal[3] > PROX_THRESHOLD or
+   prox.horizontal[4] > PROX_THRESHOLD 
+then
+    motor.left.target=0 
+    motor.right.target=0
+    state = state +1 	
+end

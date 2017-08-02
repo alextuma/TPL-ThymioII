@@ -1,0 +1,8 @@
+#wait 1 sec
+timer.period[0] = 1000
+if timer_fin == 1
+then
+	timer_fin = 0	
+	state = state + 1
+	timer.period[0] = 0
+end
